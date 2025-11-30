@@ -3,6 +3,7 @@ import "dotenv/config";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import connectDB from "./config/database.js";
+import router from "./routes/api.js";
 
 
 connectDB();
@@ -16,6 +17,8 @@ app.use(urlencoded({extended: true}));
 app.use(cors());
 
 app.get("/", (req, res)=> res.send("Server is running fine..."))
+app.use("/api/v1", router)
+
 
 const PORT = process.env.PORT
 
