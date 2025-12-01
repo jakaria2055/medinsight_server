@@ -126,3 +126,81 @@ export const deleteMedicine = async (req, res) => {
     });
   }
 };
+
+export const listByCompany = async (req, res) => {
+  try {
+    // Get logged-in user/admin ID from middleware (req.user or req.admin)
+    const companyId = req.user?._id || req.admin?._id;
+
+    if (!companyId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized: No company information found.",
+      });
+    }
+
+    const medicines = await MedicineModel.find({ company: companyId }).sort({
+      createdAt: -1,
+    });
+
+    if (medicines.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No medicines found for this company.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Medicines fetched successfully.",
+      count: medicines.length,
+      data: medicines,
+    });
+  } catch (error) {
+    console.error("List By Company Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to fetch medicines.",
+    });
+  }
+};
+
+// ***************** Medicine Details ***************** //
+export const medicineDetails = async (req, res) => {
+  try {
+    const companyId = req.user?._id || req.admin?._id;
+    const medicineId = req.params.id;
+
+    if (!companyId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized: No company information found.",
+      });
+    }
+
+    // Find a single medicine by ID and company
+    const medicine = await MedicineModel.findOne({
+      _id: medicineId,
+      company: companyId,
+    });
+
+    if (!medicine) {
+      return res.status(404).json({
+        success: false,
+        message: "No medicine found for the given ID.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Medicine fetched successfully.",
+      data: medicine,
+    });
+  } catch (error) {
+    console.error("Medicine Details Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to fetch medicine details.",
+    });
+  }
+};
