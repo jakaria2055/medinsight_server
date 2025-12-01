@@ -2,6 +2,7 @@ import express from "express";
 import { adminAuth } from "../middlewares/authMiddlewares.js";
 import { adminLogout, loginAdmin, registerAdmin } from "../contollers/adminController.js";
 import upload from "../middlewares/uploadMiddleware.js";
+import { addMedicine, deleteMedicine, updateMedicine } from "../contollers/adminTaskController.js";
 
 
 const router = express.Router();
@@ -13,9 +14,9 @@ router.post('/company-admin/logout',adminAuth, adminLogout);
 
 
 //Admin Operation
-router.post('/admin/add-medicine', upload.single("image"), adminAuth, addMedicine); //okk
-router.post('/admin/update-medicine/:medicineId', upload.single("image"), adminAuth, updateMedicine); //okk
-router.post('/admin/delete-medicine/:medicineId', adminAuth, deleteMedicine); //okk
+router.post('/admin/add-medicine', upload.single("image"), adminAuth, addMedicine); 
+router.post('/admin/update-medicine/:medicineId', upload.single("image"), adminAuth, updateMedicine);
+router.post('/admin/delete-medicine/:medicineId', adminAuth, deleteMedicine);
 
 
 export default router;

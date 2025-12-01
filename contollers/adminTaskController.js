@@ -1,7 +1,7 @@
 import MedicineModel from "../models/MedicineModel.js";
 import cloudinary from "../utility/cloudinary.js";
 
-//******************Add Medicine*******************//
+//Add Medicine
 export const addMedicine = async (req, res) => {
   try {
     const { name, price, group, effectiveness, sideeffect } = req.body;
@@ -58,8 +58,45 @@ export const addMedicine = async (req, res) => {
   }
 };
 
+//Edit Medicine
+export const updateMedicine = async (req, res) => {
+  try {
+    const adminId = req.admin._id;
+    const medicineId = req.params.medicineId;
+    let reqBody = req.body;
 
-//****************Delete Medicine********************//
+    const medicine = await MedicineModel.findOne({
+      _id: medicineId,
+      company: adminId,
+    });
+    if (!medicine) {
+      return res.status(404).json({
+        success: false,
+        message: "Medicine not found or not authorized to update.",
+      });
+    }
+
+    const updatedMedicine = await MedicineModel.findByIdAndUpdate(
+      medicineId,
+      { $set: reqBody },
+      { new: true, runValidators: true }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Medicine info updated successfully",
+      data: updatedMedicine,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to add medicine",
+    });
+  }
+};
+
+//Delete Medicine
 export const deleteMedicine = async (req, res) => {
   try {
     const adminId = req.admin._id;
